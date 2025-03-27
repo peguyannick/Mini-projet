@@ -1,6 +1,7 @@
 name: CI/CD for PHP App
  
 on: [push, pull_request]
+jobs:
   security:
     runs-on: ubuntu-latest
     steps:
