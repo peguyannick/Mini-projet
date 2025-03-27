@@ -1,0 +1,15 @@
+{
+    "name": "nickt/site_notes",
+    "autoload": {
+        "psr-4": {
+            "Nickt\\SiteNotes\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "peguyannick",
+            "email": "nicktchatat@gmail.com"
+        }
+    ],
+    "require": {}
+}
