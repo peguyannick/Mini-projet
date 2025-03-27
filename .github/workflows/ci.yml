@@ -1,0 +1,45 @@
+name: CI/CD for PHP App
+ 
+on: [push, pull_request]
+ 
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v3
+ 
+      - name: Installer PHP et Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.3'  # Use PHP 7.3 as per your config
+          extensions: mbstring, pdo, pdo_mysql
+          tools: composer:1.8.6, phpunit  # Use Composer 1.8.6
+ 
+      - name: Installer les dépendances
+        run: composer install --no-interaction --prefer-dist
+ 
+      - name: Exécuter les tests avec PHPUnit
+        run: vendor/bin/phpunit tests/
+ 
+  security:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v3
+ 
+      - name: Installer SonarScanner
+        run: |
+          curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+          unzip sonar-scanner.zip
+          echo "$PWD/sonar-scanner-5.0.1.3006-linux/bin" >> $GITHUB_PATH
+ 
+      - name: Analyse du code avec SonarQube
+        run: |
+          sonar-scanner \
+          -Dsonar.organization=ppeguyannick \
+          -Dsonar.projectKey=peguyannick_Mini-projet \
+          -Dsonar.sources=. \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
