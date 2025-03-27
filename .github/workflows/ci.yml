@@ -19,6 +19,9 @@ jobs:
       - name: Installer les dépendances
         run: composer install --no-interaction --prefer-dist
 
+  test: 
+      - name: Exécuter les tests avec PHPUnit
+        run: vendor/bin/phpunit tests/
 
   security:
     runs-on: ubuntu-latest
