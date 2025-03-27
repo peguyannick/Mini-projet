@@ -4,7 +4,6 @@ on: [push, pull_request]
  
  
   security:
-    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Récupérer le code
