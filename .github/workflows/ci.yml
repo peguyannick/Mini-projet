@@ -1,36 +1,36 @@
 name: CI/CD for PHP App
  
 on: [push, pull_request]
-
 jobs:
+
+  setphp:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v3
+ 
+      - name: Installer PHP et Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2.12'  # Use PHP 7.3 as per your config
+          extensions: mbstring, pdo, pdo_mysql
+          tools: composer:2.8.6, phpunit  # Use Composer 1.8.6
+ 
+      - name: Installer les dépendances
+        run: composer install --no-interaction --prefer-dist
+
   security:
     runs-on: ubuntu-latest
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v3      
-
-      # Installation de PHP et des dépendances avec Composer
-      - name: Configuration de PHP et des dépendances
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y php php-cli php-mbstring unzip curl
-          curl -sS https://getcomposer.org/installer | php
-          sudo mv composer.phar /usr/local/bin/composer
-          composer install
-
-      # Lancer les tests unitaires avec PHPUnit
-      - name: Exécuter les tests unitaires
-        run: |
-          ./vendor/bin/phpunit --testdox
-
-      # Installer SonarScanner pour analyse du code
+ 
       - name: Installer SonarScanner
         run: |
           curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
           unzip sonar-scanner.zip
           echo "$PWD/sonar-scanner-5.0.1.3006-linux/bin" >> $GITHUB_PATH
  
-      # Analyse du code avec SonarQube
       - name: Analyse du code avec SonarQube
         run: |
           sonar-scanner \
@@ -39,19 +39,3 @@ jobs:
           -Dsonar.sources=. \
           -Dsonar.host.url=https://sonarcloud.io \
           -Dsonar.token=${{ secrets.SONAR_TOKEN }}
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: security  # Attendre que le job "security" soit terminé avant de déployer
-    steps:
-      - name: Récupérer le code
-        uses: actions/checkout@v3      
-      
-      - name: Déploiement sur le serveur distant
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
-          cd /chemin/de/votre/application
-          git pull origin main  # Récupérer les dernières modifications
-          composer install      # Installer les dépendances
-          php artisan migrate   # Appliquer les migrations si Laravel, ou commande équivalente
-          EOF

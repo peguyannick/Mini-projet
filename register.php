@@ -49,7 +49,6 @@
     require "includes/config.php";
     // Gestion des erreurs et validation
     if (!empty($_POST)) {
-        var_dump($_POST);
         $username = trim($_POST['username']);
         $password = $_POST['password'];
         $confirm_password = $_POST['confirm_password'];
@@ -77,6 +76,7 @@
                 $stmt = $dbh->prepare($sql);
                 $stmt->execute([$username, $hashed_password]);
                 echo "<p style='color: green;'>Inscription réussie !</p>";
+                
             }
         }
     }
