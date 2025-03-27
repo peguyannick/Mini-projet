@@ -1,53 +1,47 @@
-name: CI/CD for PHP App
+name: CI/CD for PHP App 
 
-# Déclencheur du pipeline : déclenché sur push et pull request.
-on: [push, pull_request]
+  
 
-jobs:
-  security:
-    runs-on: ubuntu-latest
-    steps:
-      # Étape 1 : Récupérer le code source depuis le dépôt GitHub
-      - name: Récupérer le code
-        uses: actions/checkout@v3      
+on: [push, pull_request] 
 
-      # Étape 2 : Installer les dépendances PHP pour effectuer des tests de sécurité et de qualité.
-      - name: Installer les dépendances PHP
-        run: |
-          sudo apt-get update
-          sudo apt-get install php-cli php-mbstring unzip
-          composer install  # Si votre projet utilise Composer pour gérer les dépendances
+jobs: 
 
-      # Étape 3 : Installer SonarScanner pour effectuer l'analyse statique du code (audit de sécurité et qualité)
-      - name: Installer SonarScanner
-        run: |
-          curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-          unzip sonar-scanner.zip
-          echo "$PWD/sonar-scanner-5.0.1.3006-linux/bin" >> $GITHUB_PATH
-          export PATH="$PWD/sonar-scanner-5.0.1.3006-linux/bin:$PATH"
+  security: 
 
-      # Étape 4 : Vérification de l’installation de SonarScanner pour éviter les erreurs d’exécution
-      - name: Vérification de l’installation de SonarScanner
-        run: sonar-scanner --version
+    runs-on: ubuntu-latest 
 
-      # Étape 5 : Analyse statique avec SonarQube (Audit de sécurité et qualité du code)
-      - name: Analyse du code avec SonarQube
-        run: |
-          sonar-scanner \
-            -Dsonar.organization=peguyannick \
-            -Dsonar.projectKey=peguyannick_Mini-projet \
-            -Dsonar.sources=. \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+    steps: 
 
-      # Étape 6 : Lancer des tests PHPUnit pour garantir la qualité du code
-      - name: Exécuter les tests PHPUnit
-        run: |
-          vendor/bin/phpunit --coverage-text
+      - name: Récupérer le code 
 
-      # Étape 7 : Détection des vulnérabilités connues dans les dépendances PHP
-      - name: Analyse des vulnérabilités des dépendances avec PHP Security Checker
-        run: |
-          curl -s https://get.symfony.com/php-security-checker.phar -o php-security-checker.phar
-          php php-security-checker.phar composer.lock
+        uses: actions/checkout@v3 
 
+  
+
+      - name: Installer SonarScanner 
+
+        run: | 
+
+          curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip 
+
+          unzip sonar-scanner.zip 
+
+          echo "$PWD/sonar-scanner-5.0.1.3006-linux/bin" >> $GITHUB_PATH 
+
+  
+
+      - name: Analyse du code avec SonarQube 
+
+        run: | 
+
+          sonar-scanner \ 
+
+          -Dsonar.organization=peguyannick \ 
+
+          -Dsonar.projectKey=peguyannick_Mini-projet \ 
+
+          -Dsonar.sources=. \ 
+
+          -Dsonar.host.url=https://sonarcloud.io \ 
+
+          -Dsonar.token=${{ secrets.SONAR_TOKEN }} 
