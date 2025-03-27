@@ -19,6 +19,7 @@ jobs:
       - name: Installer les dépendances
         run: composer install --no-interaction --prefer-dist
 
+
   security:
     runs-on: ubuntu-latest
     steps:
